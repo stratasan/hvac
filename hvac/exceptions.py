@@ -1,5 +1,13 @@
 class VaultError(Exception):
-    def __init__(self, message=None, errors=None):
+    def __init__(self, message=None, errors=None, response=None):
+        self.response = response
+
+        if not errors and response and 'application/json' in response.headers['Content-Type']:
+            # Try to guess the error message from the response
+            json = response.json()
+            if 'errors' in json:
+                errors = json['errors']
+
         if errors:
             message = ', '.join(errors)
 
